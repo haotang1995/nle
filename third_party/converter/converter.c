@@ -200,6 +200,7 @@ Conversion *conversion_create(size_t rows, size_t cols, size_t term_rows,
   c->timestamps = (Int64Ptr){0};
   c->inputs = (UnsignedCharPtr){0};
   c->scores = (Int32Ptr){0};
+  c->strategies = (Int32Ptr){0};
   c->remaining = 0;
   c->buf = NULL;
   bool wrap = (version != 1);
@@ -224,7 +225,8 @@ void conversion_set_buffers(Conversion *c, unsigned char *chars, size_t chars_si
                             int16_t *cursors, size_t cursors_size,
                             int64_t *timestamps, size_t timestamps_size,
                             unsigned char *inputs, size_t inputs_size,
-                            int32_t *scores, size_t scores_size) {
+                            int32_t *scores, size_t scores_size,
+                            int32_t *strategies, size_t strategies_size) {
   assert(chars_size % (c->rows * c->cols) == 0);
   c->remaining = chars_size / (c->rows * c->cols);
 
@@ -242,6 +244,8 @@ void conversion_set_buffers(Conversion *c, unsigned char *chars, size_t chars_si
       (UnsignedCharPtr){inputs, inputs, inputs + inputs_size};
   c->scores =
       (Int32Ptr){scores, scores, scores + scores_size};
+  c->strategies =
+      (Int32Ptr){strategies, strategies, strategies + strategies_size};
 }
 
 int conversion_load_ttyrec(Conversion *c, FILE *f) {
@@ -306,6 +310,11 @@ void write_to_buffers(Conversion *conv) {
     if (conv->header.channel == 2) {
       /* V3: Write just the reward. Do not write the screen. */
       memcpy(conv->scores.cur++, conv->buf, sizeof(*conv->scores.cur));
+      return;
+    }
+    if (conv->header.channel == 3) {
+      /* V4: Write just the strategy. Do not write the screen. */
+      memcpy(conv->strategies.cur++, conv->buf, sizeof(*conv->strategies.cur));
       return;
     }
     if (conv->header.channel == 1) {

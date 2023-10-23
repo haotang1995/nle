@@ -68,7 +68,7 @@ NETHACKOPTIONS = (
 )
 
 HACKDIR = pkg_resources.resource_filename("nle", "nethackdir")
-TTYREC_VERSION = 3
+TTYREC_VERSION = 4
 
 
 def _new_dl_linux(vardir):
@@ -246,8 +246,8 @@ class Nethack:
         else:
             self._step_return = lambda: self._obs
 
-    def step(self, action):
-        self._pynethack.step(action)
+    def step(self, action, strategy=-1):
+        self._pynethack.step(action, strategy)
         return self._step_return(), self._pynethack.done()
 
     def reset(self, new_ttyrec=None, wizkit_items=None):

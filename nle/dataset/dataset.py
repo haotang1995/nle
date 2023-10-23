@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import threading
+
 from collections import defaultdict
 from functools import partial
 
@@ -18,6 +19,7 @@ def convert_frames(
     timestamps,
     actions,
     scores,
+    strategies,
     resets,
     gameids,
     load_fn,
@@ -41,7 +43,7 @@ def convert_frames(
 
     resets[0] = 0
     while True:
-        remaining = converter.convert(chars, colors, curs, timestamps, actions, scores)
+        remaining = converter.convert(chars, colors, curs, timestamps, actions, scores, strategies)
         end = np.shape(chars)[0] - remaining
 
         resets[1:end] = 0
@@ -56,6 +58,7 @@ def convert_frames(
         timestamps = timestamps[-remaining:]
         actions = actions[-remaining:]
         scores = scores[-remaining:]
+        strategies = strategies[-remaining:]
         resets = resets[-remaining:]
         gameids = gameids[-remaining:]
         if load_fn(converter):
@@ -68,6 +71,7 @@ def convert_frames(
             timestamps.fill(0)
             actions.fill(0)
             scores.fill(0)
+            strategies.fill(0)
             resets.fill(0)
             gameids.fill(0)
             return
@@ -92,6 +96,7 @@ def _ttyrec_generator(
     resets = np.zeros((batch_size, seq_length), dtype=np.uint8)
     gameids = np.zeros((batch_size, seq_length), dtype=np.int32)
     scores = np.zeros((batch_size, seq_length), dtype=np.int32)
+    strategies = np.zeros((batch_size, seq_length), dtype=np.int32)
 
     key_vals = [
         ("tty_chars", chars),
@@ -105,6 +110,8 @@ def _ttyrec_generator(
         key_vals.append(("keypresses", actions))
     if ttyrec_version >= 3:
         key_vals.append(("scores", scores))
+    if ttyrec_version >= 4:
+        key_vals.append(("strategies", strategies))
 
     # Load initial gameids.
     converters = [
@@ -128,6 +135,7 @@ def _ttyrec_generator(
                 timestamps,
                 actions,
                 scores,
+                strategies,
                 resets,
                 gameids,
             )

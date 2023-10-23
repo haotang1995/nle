@@ -108,7 +108,8 @@ class Converter
 
     int
     convert(py::object chars, py::object colors, py::object cursors,
-            py::object timestamps, py::object inputs, py::object scores)
+            py::object timestamps, py::object inputs, py::object scores, 
+            py::object strategies)
     {
         int status = 0;
 
@@ -128,7 +129,8 @@ class Converter
             checked_conversion<int16_t>(cursors, { unroll, 2 }), unroll * 2,
             checked_conversion<int64_t>(timestamps, { unroll }), unroll,
             checked_conversion<uint8_t>(inputs, { unroll }), unroll,
-            checked_conversion<int32_t>(scores, { unroll }), unroll);
+            checked_conversion<int32_t>(scores, { unroll }), unroll,
+            checked_conversion<int32_t>(strategies, { unroll }), unroll);
         {
             py::gil_scoped_release release;
             status = conversion_convert_frames(conversion_);
@@ -197,7 +199,7 @@ PYBIND11_MODULE(_pyconverter, m)
              py::arg("gameid") = 0, py::arg("part") = 0)
         .def("convert", &Converter::convert, py::arg("chars"),
              py::arg("colors"), py::arg("cursors"), py::arg("timestamps"),
-             py::arg("inputs"), py::arg("scores"))
+             py::arg("inputs"), py::arg("scores"), py::arg("strategies")) 
         .def("is_loaded", &Converter::is_loaded)
         .def_readonly("rows", &Converter::rows_)
         .def_readonly("cols", &Converter::cols_)

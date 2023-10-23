@@ -336,11 +336,13 @@ class NLE(gym.Env):
     def _check_abort(self, observation):
         return self._steps >= self._max_episode_steps
 
-    def step(self, action: int):
+    def step(self, action: int, strategy: int = -1):
         """Steps the environment.
 
         Args:
             action (int): action integer as defined by ``self.action_space``.
+            strategy (int): 32-bit custom ``strategy`` integer, representing a 
+                hierarchical label, specified at run-time.
 
         Returns:
             (dict, float, bool, dict): a tuple containing
@@ -356,7 +358,7 @@ class NLE(gym.Env):
         # Careful: By default we re-use Numpy arrays, so copy before!
         last_observation = tuple(a.copy() for a in self.last_observation)
 
-        observation, done = self.nethack.step(self.actions[action])
+        observation, done = self.nethack.step(self.actions[action], strategy)
         is_game_over = observation[self._program_state_index][0] == 1
         if is_game_over or not self._allow_all_modes:
             observation, done = self._perform_known_steps(

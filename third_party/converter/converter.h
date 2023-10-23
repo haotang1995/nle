@@ -68,6 +68,7 @@ typedef struct Conversion {
   Int64Ptr timestamps; /* Array to fill timestamp values in */
   UnsignedCharPtr inputs; /* Array to fill inputs values in */
   Int32Ptr scores; /* Array to fill in-game score values in */
+  Int32Ptr strategies; /* Array to fill in-game strategy values in */
 
   size_t remaining; /* Remaining (free) number of frames in buffers */
 
@@ -84,7 +85,8 @@ void conversion_set_buffers(Conversion *c, unsigned char *chars, size_t chars_si
                             int16_t *cursors, size_t cursors_size,
                             int64_t *timestamps, size_t timestamps_size,
                             unsigned char *inputs, size_t inputs_size,
-                            int32_t *scores, size_t scores_size);
+                            int32_t *scores, size_t scores_size,
+                            int32_t *strategies, size_t strategies_size);
 int conversion_load_ttyrec(Conversion *c, FILE *f);
 int conversion_convert_frames(Conversion *c);
 int conversion_close(Conversion *c);

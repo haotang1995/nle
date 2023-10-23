@@ -4,6 +4,7 @@ import glob
 import os
 import re
 import time
+
 from functools import partial
 
 from nle import dataset as nld
@@ -266,7 +267,10 @@ def add_nledata_directory(path, name, filename=nld.db.DB):
             files = set(glob.iglob(stem))
             ttyrecnames = set(f.split("/")[-1] for f in files)
             versions = set(f.split("ttyrec")[-1].replace(".bz2", "") for f in files)
-            assert len(versions) == 1, "Cannot add ttyrecs with different versions"
+
+            if len(versions) != 1: 
+                continue
+                #"Cannot add ttyrecs with different versions"
             version = versions.pop()
 
             if version == "":

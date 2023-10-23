@@ -155,13 +155,14 @@ class Nethack
     }
 
     void
-    step(int action)
+    step(int action, int strategy)
     {
         if (!nle_)
             throw std::runtime_error("step called without reset()");
         if (obs_.done)
             throw std::runtime_error("Called step on finished NetHack");
         obs_.action = action;
+        obs_.strategy = strategy;
         nle_ = nle_step(nle_, &obs_);
     }
 
@@ -380,7 +381,7 @@ PYBIND11_MODULE(_pynethack, m)
         .def(py::init<std::string, std::string, std::string, bool>(),
              py::arg("dlpath"), py::arg("hackdir"), py::arg("nethackoptions"),
              py::arg("spawn_monsters") = true)
-        .def("step", &Nethack::step, py::arg("action"))
+        .def("step", &Nethack::step, py::arg("action"), py::arg("strategy"))
         .def("done", &Nethack::done)
         .def("reset", py::overload_cast<>(&Nethack::reset))
         .def("reset", py::overload_cast<std::string>(&Nethack::reset))

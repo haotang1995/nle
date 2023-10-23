@@ -47,6 +47,7 @@
 
 typedef struct nle_observation {
     int action;
+    int strategy;
     int done;
     char in_normal_game;     /* Bool indicating if other obs are set. */
     int how_done;            /* If game is really_done, how it ended. */

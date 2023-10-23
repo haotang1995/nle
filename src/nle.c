@@ -462,6 +462,8 @@ nle_step(nle_ctx_t *nle, nle_obs *obs)
     if (nle->ttyrec) {
         write_ttyrec_header(1, 1);
         write_ttyrec_data(&obs->action, 1);
+        write_ttyrec_header(4, 3);
+        write_ttyrec_data(&obs->strategy, 4);
     }
     fcontext_transfer_t t = jump_fcontext(nle->generatorcontext, obs);
     nle->generatorcontext = t.ctx;
@@ -474,6 +476,8 @@ nle_step(nle_ctx_t *nle, nle_obs *obs)
          *  - 0: the terminal instructions (classic ttyrec)
          *  - 1: the keypress/action (1 byte)
          *  - 2: the in-game score (4 bytes)
+         *  - 3: the strategy label [if any] (4 byte)
+
          *
          * We could either the note the in-game score every time we flush the
          * terminal instructions to screen, (eg writing [ 0 2 0 2 <step> 1 0 2
