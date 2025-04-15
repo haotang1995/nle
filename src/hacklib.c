@@ -1097,6 +1097,7 @@ char *buf;
 int
 phase_of_the_moon() /* 0-7, with 0: new, 4: full */
 {
+    return 2;
     register struct tm *lt = getlt();
     register int epact, diy, goldn;
 
